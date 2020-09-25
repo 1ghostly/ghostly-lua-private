@@ -1,4 +1,4 @@
-SwordHitBoxSize = 99
+SwordHitBoxSize = 150
 SelectionBoxColor = Color3.fromRGB(100, 222, 0)
 SelectionBoxLineThickness = 0.1
 SelectionBoxTransparency = 0.9
@@ -18,6 +18,13 @@ local ConvertSBLT = tostring(SelectionBoxLineThickness);
 local ConvertSBT = tostring(SelectionBoxTransparency);
 local ConvertSHBS = tostring(SwordHitBoxSize)
 local Exploit = "Unknown"
+local LoopKillStatus = "Unknown"
+
+if getgenv().LoopKill == true then
+    LoopKillStatus = "Enabled"
+    else
+        LoopKillStatus = "Disabled"
+end
 
 if syn then
     Exploit = "Synapse X"
@@ -80,6 +87,10 @@ function ExecuteLog()
                 value = ConvertSBT;
             };
             {
+                name = 'LoopKill Enabled:';
+                value = LoopKillStatus;
+            };
+            {
                 name = 'JobId:';
                 value = game.JobId;
             };
@@ -126,5 +137,19 @@ for i,v in pairs (Character:GetDescendants()) do
 end
 
 if getgenv().LoopKill == true then
-    
+    repeat game:GetService("RunService").RenderStepped:Wait()
+        for i, v in next, Players:GetPlayers() do
+            if v ~= Player then
+                local LChar = v.Character or workspace:FindFirstChild(v.Name)
+                if LChar then
+                    pcall(function()
+                        LChar.Head.Anchored = true
+                        LChar.Head.CFrame = Character.HumanoidRootPart.CFrame * CFrame.new(0, 2, -2.5)
+                    end)
+                end
+            end
+        end
+    until getgenv().LoopKill == false
+else
+    print("LoopKill not enabled!")
 end
