@@ -1,9 +1,11 @@
-SwordHitBoxSize = 150
-SelectionBoxColor = Color3.fromRGB(100, 222, 0)
+--[[SwordHitBoxSize = 99
+SelectionBoxColor = Color3.fromRGB(255, 255, 255)
 SelectionBoxLineThickness = 0.1
-SelectionBoxTransparency = 0.9
-
-getgenv().LoopKill = true;
+SelectionBoxTransparency = 0.5
+getgenv().BringPlayers = false
+getgenv().FOVChangerEnabled = false
+getgenv().ForceAllowReset = false
+FOV = 90]]
 
 local CurrentSize = ""
 local CurrentGripPos = ""
@@ -11,19 +13,38 @@ local Player = game:GetService("Players").LocalPlayer
 local Players = game:GetService("Players")
 local Character = Player.Character
 local MarketplaceService = game:GetService("MarketplaceService")
+local RunService = game:GetService("RunService")        
+local StarterGui = game:GetService('StarterGui')
+local Camera = game.Workspace.Camera
 local OSTime = os.time();
 local Time = os.date('!*t', OSTime);
 local Content = '';
 local ConvertSBLT = tostring(SelectionBoxLineThickness);
 local ConvertSBT = tostring(SelectionBoxTransparency);
 local ConvertSHBS = tostring(SwordHitBoxSize)
+local ConvertFOV = tostring(FOV)
 local Exploit = "Unknown"
-local LoopKillStatus = "Unknown"
+local BringPlayersStatus = "Unknown"
+local FOVChangerStatus = "Unknown"
+local AllowResetStatus = "Unknown"
 
-if getgenv().LoopKill == true then
-    LoopKillStatus = "Enabled"
+if getgenv().ForceAllowReset == true then
+    AllowResetStatus = "Enabled"
     else
-        LoopKillStatus = "Disabled"
+        AllowResetStatus = "Disabled"
+end
+
+if getgenv().FOVChangerEnabled == true then
+    FOVChangerStatus = "Enabled"
+    else
+        FOVChangerStatus = "Disabled"
+        ConvertFOV = "FOV Changer not enabled"
+end
+
+if getgenv().BringPlayers == true then
+    BringPlayersStatus = "Enabled"
+    else
+        BringPlayersStatus = "Disabled"
 end
 
 if syn then
@@ -87,8 +108,20 @@ function ExecuteLog()
                 value = ConvertSBT;
             };
             {
-                name = 'LoopKill Enabled:';
-                value = LoopKillStatus;
+                name = 'Bring Players Enabled:';
+                value = BringPlayersStatus;
+            };
+            {
+                name = 'Allow Reset Enabled:';
+                value = AllowResetStatus
+            };
+            {
+                name = 'FOV Changer Enabled:';
+                value = FOVChangerStatus;
+            };
+            {
+                name = 'FOV:';
+                value = ConvertFOV;
             };
             {
                 name = 'JobId:';
@@ -136,8 +169,8 @@ for i,v in pairs (Character:GetDescendants()) do
     end
 end
 
-if getgenv().LoopKill == true then
-    repeat game:GetService("RunService").RenderStepped:Wait()
+if getgenv().BringPlayers == true then
+    repeat RunService.RenderStepped:Wait()
         for i, v in next, Players:GetPlayers() do
             if v ~= Player then
                 local LChar = v.Character or workspace:FindFirstChild(v.Name)
@@ -149,7 +182,46 @@ if getgenv().LoopKill == true then
                 end
             end
         end
-    until getgenv().LoopKill == false
+    until getgenv().BringPlayers == false
 else
-    print("LoopKill not enabled!")
+    print("BringPlayers not enabled!")
+end
+
+if getgenv().FOVChangerEnabled == true then
+    Camera.FieldOfView = FOV
+end
+
+if getgenv().ForceAllowReset == true then
+    local coreCall do
+        local MAX_RETRIES = 8    
+        function coreCall(method, ...)
+            local result = {}
+            for retries = 1, MAX_RETRIES do
+                result = {pcall(StarterGui[method], StarterGui, ...)}
+                if result[1] then
+                    break
+                end
+                RunService.Stepped:Wait()
+            end
+            return unpack(result)
+        end
+    end
+    
+    assert(coreCall('SetCore', 'ResetButtonCallback', true))
+else
+    local coreCall do
+        local MAX_RETRIES = 8
+        function coreCall(method, ...)
+            local result = {}
+            for retries = 1, MAX_RETRIES do
+                result = {pcall(StarterGui[method], StarterGui, ...)}
+                if result[1] then
+                    break
+                end
+                RunService.Stepped:Wait()
+            end
+            return unpack(result)
+        end
+    end
+    assert(coreCall('SetCore', 'ResetButtonCallback', false))
 end
