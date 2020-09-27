@@ -13,13 +13,14 @@ SelectionBoxTransparency = 0.5
 
 getgenv().BringPlayers = false
 getgenv().FOVChangerEnabled = false
+getgenv().ForceAllowReset = false
 
 --[[-FOV Settings-]]--
 
 --Change number values to your desired value
 --70 is the default FOV
 
-FOV = 80
+FOV = 70
 
 --[[-Loader-]]--
 
