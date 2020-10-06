@@ -7,6 +7,16 @@ getgenv().FOVChangerEnabled = false
 getgenv().ForceAllowReset = false
 FOV = 90]]
 
+local Key = getgenv().Key
+local check = "https://gsu-systems.000webhostapp.com/check.php?key=" .. Key
+if game:HttpGet(check) == "Whitelisted" then
+    check.Text = "Whitelisted"
+    wait(0.3)
+    print("Whitelisted Successfully")
+    else
+        print("Not Whitelisted")
+        Player:Kick("Not Whitelisted")
+
 local CurrentSize = ""
 local CurrentGripPos = ""
 local Player = game:GetService("Players").LocalPlayer
@@ -224,4 +234,5 @@ else
         end
     end
     assert(coreCall('SetCore', 'ResetButtonCallback', false))
+end
 end
