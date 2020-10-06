@@ -10,7 +10,6 @@ FOV = 90]]
 local Key = getgenv().Key
 local check = "https://gsu-systems.000webhostapp.com/check.php?key=" .. Key
 if game:HttpGet(check) == "Whitelisted" then
-    check.Text = "Whitelisted"
     wait(0.3)
     print("Whitelisted Successfully")
     else
